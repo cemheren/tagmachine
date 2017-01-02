@@ -12,8 +12,6 @@ import math
 # Input data files are available in the "../input/" directory.
 # For example, running this (by clicking run or pressing Shift+Enter) will list the files in the input directory
 
-from subprocess import check_output
-
 stop_words = {'a', "a's", 'able', 'about', 'above', 'according', 'accordingly',
               'across', 'actually', 'after', 'afterwards', 'again', 'against',
               "ain't", 'all', 'allow', 'allows', 'almost', 'alone', 'along',
@@ -101,10 +99,8 @@ stop_words = {'a', "a's", 'able', 'about', 'above', 'according', 'accordingly',
               'yourself', 'yourselves', 'z', 'zero', ''}
     
 def main():
-    data_path = "../input/"
-    print(check_output(["ls", "../input"]).decode("utf8"))
     
-    in_file = open(data_path + "biology.csv")
+    in_file = open("biology.csv")
     
     docs = []
     reader = csv.DictReader(in_file)
@@ -121,7 +117,7 @@ def main():
         print(words)
         print(clean_stop_words(words))
 
-    count = count + 1
+        count = count + 1
 
 
 def clean_html(raw_html):
