@@ -10,24 +10,43 @@ from tflearn.data_utils import *
 from tflearn.layers.recurrent import bidirectional_rnn, BasicLSTMCell
 
 print("loading data...")
-x = pickle.load(open('all_input_dense_10000.pickle', 'rb'))
-y = pickle.load(open('all_labels.pickle', 'rb'))
+x1 = pickle.load(open('all_input_dense_10000.pickle', 'rb'))
+y1 = pickle.load(open('all_labels.pickle', 'rb'))
 #
 # xP = x[:1000]
 # yP = y[:1000]
 # pickle.dump(xP, open('1k_input_dense_10000.pickle', 'wb'))
 # pickle.dump(yP, open('1k_labels.pickle', 'wb'))
+x = []
+y = []
+
+count = 0
+for i in range(len(y1)):
+    if all(v == 0 for v in y1[i]):
+        count = count + 1
+    else:
+        x.append(x1[i])
+        y.append(y1[i])
+
+print(count)
+print(len(x))
+print(len(y))
 
 print("splitting training and validation sets...")
 # split training set into validation set
 n_samples = len(x)
-sidx = np.random.permutation(n_samples)
-n_train = int(np.round(n_samples * (1. - 0.1)))
-# training and validation sets
-train_x = [x[s] for s in sidx[:n_train]]
-train_y = [y[s] for s in sidx[:n_train]]
-valid_x = [x[s] for s in sidx[n_train:]]
-valid_y = [y[s] for s in sidx[n_train:]]
+# sidx = np.random.permutation(n_samples)
+# n_train = int(np.round(n_samples * (1. - 0.1)))
+# # training and validation sets
+# train_x = [x[s] for s in sidx[:n_train]]
+# train_y = [y[s] for s in sidx[:n_train]]
+# valid_x = [x[s] for s in sidx[n_train:]]
+# valid_y = [y[s] for s in sidx[n_train:]]
+
+train_x = x[:(n_samples - 8000)] # last 8k is all travel
+train_y = y[:(n_samples - 8000)]
+valid_x = x[(n_samples - 8000):]
+valid_y = y[(n_samples - 8000):]
 
 trainX = pad_sequences(train_x, maxlen=120, value=0.)
 validX = pad_sequences(valid_x, maxlen=120, value=0.)
@@ -56,22 +75,11 @@ for i in range(50):
     m.fit(trainX, trainY, validation_set=0.1, show_metric=True, batch_size=32, n_epoch=2, run_id=str(i))
     print("-- TESTING...")
     q = m.predict(np.reshape(trainX[0], (1, 120)))[0]
-    q = map(int, q)
-    print(q)
-    #print(m.predict(np.reshape(trainX[99], (1, 120))).astype(np.int64))
+    q = np.argmax(q, axis=0)
+    print("prediction = ", q)
+
+    print("actual = ", np.argmax(trainY[0], axis=0))
 
 
 print("saving model: lstm.model")
 m.save('lstm.model')
-
-#
-#
-# for i in range(50):
-#     seed = random_sequence_from_textfile(path, maxlen)
-#     m.fit(X, Y, validation_set=0.1, batch_size=128,
-#           n_epoch=1, run_id='nazim')
-#     print("-- TESTING...")
-#     print("-- Test with temperature of 1.0 --")
-#     print(m.generate(600, temperature=1.0, seq_seed=seed))
-#     print("-- Test with temperature of 0.5 --")
-#     print(m.generate(600, temperature=0.5, seq_seed=seed))
