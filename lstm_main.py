@@ -58,7 +58,7 @@ print("generating model...")
 g = tflearn.input_data([None, 120])
 g = tflearn.embedding(g, input_dim=10000, output_dim=256)
 
-g = tflearn.lstm(g, 256, dynamic=True)
+g = tflearn.lstm(g, 256)
 g = tflearn.dropout(g, 0.3)
 
 # g = tflearn.lstm(g, 128, dynamic=True)
