@@ -37,9 +37,9 @@ validY = pad_sequences(valid_y, maxlen=120, value=0.)
 
 print("generating model...")
 g = tflearn.input_data([None, 120])
-g = tflearn.embedding(g, input_dim=10000, output_dim=128)
+g = tflearn.embedding(g, input_dim=10000, output_dim=256)
 
-g = bidirectional_rnn(g, BasicLSTMCell(256), BasicLSTMCell(256))
+g = tflearn.lstm(g, 256, dynamic=True)
 g = tflearn.dropout(g, 0.3)
 
 # g = tflearn.lstm(g, 128, dynamic=True)
