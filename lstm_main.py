@@ -72,7 +72,7 @@ m = tflearn.DNN(g, clip_gradients=5.0)
 print("starting training.")
 
 for i in range(30):
-    m.fit(trainX, trainY, validation_set=0.1, show_metric=True, batch_size=32, n_epoch=2, run_id=str(i))
+    m.fit(trainX, trainY, validation_set=(validX, validY), show_metric=True, batch_size=32, n_epoch=2, run_id=str(i))
     print("-- TESTING...")
     q = m.predict(np.reshape(trainX[0], (1, 120)))[0]
     q = np.argmax(q, axis=0)
