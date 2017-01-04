@@ -9,6 +9,7 @@ import collections
 from tflearn.data_utils import *
 from tflearn.layers.recurrent import bidirectional_rnn, BasicLSTMCell
 
+max_len = 10
 
 def get_sequences(arr, seq_maxlen = 10, redun_step = 1):
     sequences = []
@@ -88,7 +89,7 @@ vy = to_categorical(vy, 2)
 
 print("start 1 hot encoding...")
 xxx = []
-seq = get_sequences(x, 25)
+seq = get_sequences(x, max_len)
 for k in range(len(seq)):
     dform = []
     for g in seq[k]:
@@ -98,7 +99,7 @@ for k in range(len(seq)):
     xxx.append(dform)
 
 vvv = []
-seq = get_sequences(vx, 25)
+seq = get_sequences(vx, max_len)
 for k in range(len(seq)):
     dform = []
     for g in seq[k]:
@@ -108,7 +109,7 @@ for k in range(len(seq)):
     vvv.append(dform)
 
 print("generating model...")
-g = tflearn.input_data([None, 25, 1])
+g = tflearn.input_data([None, max_len, 1])
 # g = tflearn.embedding(g, input_dim=10000, output_dim=256)
 
 g = tflearn.lstm(g, 256, return_seq=True)
