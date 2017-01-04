@@ -86,13 +86,14 @@ for line in valid_y:
 
 vy = to_categorical(vy, 2)
 
+print("start 1 hot encoding...")
 xxx = []
 seq = get_sequences(x, 25)
 for k in range(len(seq)):
     dform = []
     for g in seq[k]:
-        p = np.zeros(10001, dtype=np.bool)
-        p[g] = 1
+        p = np.zeros(1, dtype=np.int)
+        p[0] = g
         dform.append(p)
     xxx.append(dform)
 
@@ -101,13 +102,13 @@ seq = get_sequences(vx, 25)
 for k in range(len(seq)):
     dform = []
     for g in seq[k]:
-        p = np.zeros(10001, dtype=np.bool)
-        p[g] = 1
+        p = np.zeros(1, dtype=np.int)
+        p[0] = g
         dform.append(p)
     vvv.append(dform)
 
 print("generating model...")
-g = tflearn.input_data([None, 25, 10001])
+g = tflearn.input_data([None, 25, 1])
 # g = tflearn.embedding(g, input_dim=10000, output_dim=256)
 
 g = tflearn.lstm(g, 256, return_seq=True)

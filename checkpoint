@@ -1,2 +1,2 @@
-model_checkpoint_path: "/Users/cemheren/Projects/tagmachine/lstm.model"
-all_model_checkpoint_paths: "/Users/cemheren/Projects/tagmachine/lstm.model"
+model_checkpoint_path: "/Users/cemheren/Projects/tagmachine/lstm_v2.model"
+all_model_checkpoint_paths: "/Users/cemheren/Projects/tagmachine/lstm_v2.model"
