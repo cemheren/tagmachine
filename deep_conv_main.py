@@ -18,6 +18,8 @@ from tflearn.layers.recurrent import bidirectional_rnn, BasicLSTMCell
 print("loading data...")
 x1 = pickle.load(open('all_input_dense_10000.pickle', 'rb'))
 y1 = pickle.load(open('all_labels.pickle', 'rb'))
+
+travel_count = 80
 #
 # xP = x[:1000]
 # yP = y[:1000]
@@ -49,10 +51,10 @@ n_samples = len(x)
 # valid_x = [x[s] for s in sidx[n_train:]]
 # valid_y = [y[s] for s in sidx[n_train:]]
 
-train_x = x[:(n_samples - 8000)] # last 8k is all travel
-train_y = y[:(n_samples - 8000)]
-valid_x = x[(n_samples - 8000):]
-valid_y = y[(n_samples - 8000):]
+train_x = x[:(n_samples - travel_count)] # last 8k is all travel
+train_y = y[:(n_samples - travel_count)]
+valid_x = x[(n_samples - travel_count):]
+valid_y = y[(n_samples - travel_count):]
 
 trainX = pad_sequences(train_x, maxlen=120, value=0.)
 validX = pad_sequences(valid_x, maxlen=120, value=0.)
@@ -60,19 +62,27 @@ validX = pad_sequences(valid_x, maxlen=120, value=0.)
 trainY = pad_sequences(train_y, maxlen=120, value=0.)
 validY = pad_sequences(valid_y, maxlen=120, value=0.)
 
-hidden_dim = 128
+hidden_dim = 256
 
 print("generating model...")
 network = input_data(shape=[None, 120], name='input')
 network = tflearn.embedding(network, input_dim=10000, output_dim=hidden_dim)
+
+branch0 = conv_1d(network, hidden_dim, 1, padding='valid', activation='relu', regularizer="L2")
+
 branch1 = conv_1d(network, hidden_dim, 3, padding='valid', activation='relu', regularizer="L2")
 branch2 = conv_1d(network, hidden_dim, 4, padding='valid', activation='relu', regularizer="L2")
 branch3 = conv_1d(network, hidden_dim, 5, padding='valid', activation='relu', regularizer="L2")
-network = merge([branch1, branch2, branch3], mode='concat', axis=1)
+network = merge([branch0, branch1, branch2, branch3], mode='concat', axis=1)
+
 network = tf.expand_dims(network, 2)
 network = global_max_pool(network)
-network = dropout(network, 0.5)
 
+network = dropout(network, 0.3)
+network = tflearn.fully_connected(network, 1024)
+network = dropout(network, 0.3)
+
+network = fully_connected(network, 1024)
 network = fully_connected(network, 120, activation='softmax')
 
 network = regression(network, optimizer='adam', learning_rate=0.001,
@@ -94,5 +104,5 @@ for i in range(30):
     #print(m.predict(np.reshape(trainX[99], (1, 120))).astype(np.int64))
 
 
-print("saving model: conv.model")
-m.save('conv.model')
+print("saving model: deep_conv.model")
+m.save('deep_conv.model')
