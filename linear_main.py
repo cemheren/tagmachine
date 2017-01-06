@@ -58,10 +58,12 @@ n_samples = len(x)
 # valid_x = [x[s] for s in sidx[n_train:]]
 # valid_y = [y[s] for s in sidx[n_train:]]
 
-train_x = x[:(n_samples - 8000)] # last 8k is all travel
-train_y = y[:(n_samples - 8000)]
-valid_x = x[(n_samples - 8000):]
-valid_y = y[(n_samples - 8000):]
+n_travel = 20000
+
+train_x = x[:(n_samples - n_travel)] # last 8k is all travel
+train_y = y[:(n_samples - n_travel)]
+valid_x = x[(n_samples - n_travel):]
+valid_y = y[(n_samples - n_travel):]
 
 trainX = pad_sequences(train_x, maxlen=120, value=0.)
 validX = pad_sequences(valid_x, maxlen=120, value=0.)
@@ -69,18 +71,20 @@ validX = pad_sequences(valid_x, maxlen=120, value=0.)
 trainY = pad_sequences(train_y, maxlen=120, value=0.)
 validY = pad_sequences(valid_y, maxlen=120, value=0.)
 
+hidden_dim = 256
+
 print("generating model...")
 g = tflearn.input_data([None, 120])
-g = tflearn.embedding(g, input_dim=10000, output_dim=256)
+g = tflearn.embedding(g, input_dim=10000, output_dim=hidden_dim)
 
-g = tflearn.lstm(g, 256, activation='tanh')
+g = tflearn.fully_connected(g, hidden_dim, activation='tanh')
 g = tflearn.dropout(g, 0.3)
 
 # g = tflearn.lstm(g, 128, dynamic=True)
 # g = tflearn.dropout(g, 0.3)
 
 g = tflearn.fully_connected(g, 120, activation='softmax')
-g = tflearn.regression(g, optimizer='adam', loss='categorical_crossentropy', learning_rate=0.001)
+g = tflearn.regression(g, optimizer='adam', loss='categorical_crossentropy', learning_rate=0.005)
 
 m = tflearn.DNN(g, clip_gradients=5.0)
 

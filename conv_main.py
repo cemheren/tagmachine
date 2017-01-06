@@ -27,13 +27,28 @@ x = []
 y = []
 
 count = 0
+k = 0
 for i in range(len(y1)):
-    if all(v == 0 for v in y1[i]):
-        count = count + 1
-    else:
-        x.append(x1[i])
-        y.append(y1[i])
+    c = y1[i].count(1)
 
+    for r in range(len(y1[i])):
+        if y1[i][r] == 1:
+            n = np.zeros(len(y1[i]))
+            n[r] = 1
+
+            x.append(x1[i])
+            y.append(n)
+
+    if c > 1:
+        k += 1
+
+    if c == 0:
+        count += 1
+    # else:
+    #     x.append(x1[i])
+    #     y.append(y1[i])
+
+print(k)
 print(count)
 print(len(x))
 print(len(y))
