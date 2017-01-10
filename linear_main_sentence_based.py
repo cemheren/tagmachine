@@ -5,18 +5,19 @@ from six.moves import urllib
 
 import tflearn
 import numpy as np
+import random
 import collections
 from tflearn.data_utils import *
 from tflearn.layers.recurrent import bidirectional_rnn, BasicLSTMCell
 
 print("loading data...")
-all_data = pickle.load(open('all_biology_v2.pickle', 'rb'))
+all_data = pickle.load(open('biology_only_valid.pickle', 'rb'))
 
 print("splitting training and validation sets...")
 n_samples = len(all_data)
-n_travel = 20000
+n_travel = 10000
 
-n_padding = 20
+n_padding = 30
 
 train_all_data = all_data[:(n_samples - n_travel)] # last n_travel is all travel
 valid_all_data = all_data[(n_samples - n_travel):]
@@ -39,7 +40,7 @@ print("generating model...")
 g = tflearn.input_data([None, n_padding])
 g = tflearn.embedding(g, input_dim=10002, output_dim=hidden_dim)
 
-g = tflearn.fully_connected(g, hidden_dim, activation='tanh')
+g = tflearn.fully_connected(g, hidden_dim, activation='sigmoid')
 g = tflearn.dropout(g, 0.3)
 
 # g = tflearn.lstm(g, 128, dynamic=True)
@@ -55,12 +56,24 @@ print("starting training.")
 for i in range(30):
     m.fit(trainX, trainY, validation_set=(validX, validY), show_metric=True, batch_size=32, n_epoch=2, run_id=str(i))
     print("-- TESTING...")
-    q = m.predict(np.reshape(trainX[0], (1, n_padding)))[0]
-    q = np.argmax(q, axis=0)
 
-    print("prediction = ", q)
-    print("actual = ", np.argmax(trainY[0], axis=0))
+    for k in range(10):
+        rand = random.randint(0, len(validX))
+        print(valid_all_data[rand][0])
+
+        q = m.predict(np.reshape(validX[rand], (1, n_padding)))[0]
+        q = np.argmax(q, axis=0)
+
+        print("prediction = ", q)
+        if len(valid_all_data[rand][0]) > q:
+            print(valid_all_data[rand][0][q])
+
+        v = np.argmax(validY[rand], axis=0)
+        print("actual = ", v)
+        print(valid_all_data[rand][0][v])
+
+        print("------------------------------------------")
 
 
-print("saving model: linear_biology_v2.model")
-m.save('linear_biology_v2.model')
+print("saving model: linear_valid_biology_v2.model")
+m.save('linear_valid_biology_v2.model')

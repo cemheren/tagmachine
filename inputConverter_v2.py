@@ -64,11 +64,12 @@ for kind in input:
 
             if (labelArray == 0).sum() == len(words):
                 labelArray[wordIndex] = 1
+                continue
 
             all_data.append([wordArray, dictArray, labelArray])
 
 
-pickle.dump(all_data ,open('all_biology_v2.pickle', 'wb'))
+pickle.dump(all_data ,open('biology_only_valid.pickle', 'wb'))
 
 
 
