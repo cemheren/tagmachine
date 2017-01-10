@@ -16,7 +16,7 @@ print("splitting training and validation sets...")
 n_samples = len(all_data)
 n_travel = 20000
 
-n_padding = 30
+n_padding = 20
 
 train_all_data = all_data[:(n_samples - n_travel)] # last n_travel is all travel
 valid_all_data = all_data[(n_samples - n_travel):]
