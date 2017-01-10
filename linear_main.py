@@ -71,7 +71,7 @@ validX = pad_sequences(valid_x, maxlen=120, value=0.)
 trainY = pad_sequences(train_y, maxlen=120, value=0.)
 validY = pad_sequences(valid_y, maxlen=120, value=0.)
 
-hidden_dim = 256
+hidden_dim = 128
 
 print("generating model...")
 g = tflearn.input_data([None, 120])
@@ -100,5 +100,5 @@ for i in range(30):
     print("actual = ", np.argmax(trainY[0], axis=0))
 
 
-print("saving model: lstm.model")
-m.save('lstm.model')
+print("saving model: linear.model")
+m.save('linear.model')

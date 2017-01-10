@@ -28,6 +28,11 @@ y = []
 
 count = 0
 k = 0
+
+e = max(x1, key=len)
+print(e)
+print(len(e))
+
 for i in range(len(y1)):
     c = y1[i].count(1)
 
