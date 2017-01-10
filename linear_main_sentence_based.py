@@ -11,11 +11,11 @@ from tflearn.data_utils import *
 from tflearn.layers.recurrent import bidirectional_rnn, BasicLSTMCell
 
 print("loading data...")
-all_data = pickle.load(open('biology_only_valid.pickle', 'rb'))
+all_data = pickle.load(open('all_only_valid.pickle', 'rb'))
 
 print("splitting training and validation sets...")
 n_samples = len(all_data)
-n_travel = 10000
+n_travel = 60000
 
 n_padding = 30
 
@@ -34,7 +34,7 @@ validX = pad_sequences(valid_x, maxlen=n_padding, value=0.)
 trainY = pad_sequences(train_y, maxlen=n_padding, value=0.)
 validY = pad_sequences(valid_y, maxlen=n_padding, value=0.)
 
-hidden_dim = 128
+hidden_dim = 256
 
 print("generating model...")
 g = tflearn.input_data([None, n_padding])
@@ -54,7 +54,7 @@ m = tflearn.DNN(g, clip_gradients=5.0)
 print("starting training.")
 
 for i in range(30):
-    m.fit(trainX, trainY, validation_set=(validX, validY), show_metric=True, batch_size=32, n_epoch=2, run_id=str(i))
+    m.fit(trainX, trainY, validation_set=(validX, validY), show_metric=True, batch_size=1024, n_epoch=2, run_id=str(i))
     print("-- TESTING...")
 
     for k in range(10):
@@ -68,9 +68,10 @@ for i in range(30):
         if len(valid_all_data[rand][0]) > q:
             print(valid_all_data[rand][0][q])
 
-        v = np.argmax(validY[rand], axis=0)
-        print("actual = ", v)
-        print(valid_all_data[rand][0][v])
+        print("actual = ")
+        for index in range(len(validY[rand])):
+            if validY[rand][index] == 1:
+                print(valid_all_data[rand][0][index])
 
         print("------------------------------------------")
 
